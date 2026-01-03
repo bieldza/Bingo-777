@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Bingo da Família</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background: #f2f2f2;
+  padding: 10px;
+}
+table {
+  margin: auto;
+  border-collapse: collapse;
+}
+td {
+  width: 50px;
+  height: 50px;
+  border: 1px solid #000;
+  font-size: 18px;
+}
+.marcado {
+  background: green;
+  color: white;
+}
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  margin: 10px;
+}
+</style>
+</head>
+<body>
+
+<h2>🎉 Bingo da Família 🎉</h2>
+
+<button onclick="gerarCartela()">Gerar Cartela</button>
+
+<table id="cartela"></table>
+
+<h3>Número sorteado:</h3>
+<h1 id="numero">--</h1>
+
+<button onclick="sortear()">Sortear Número</button>
+
+<script>
+let sorteados = [];
+
+function gerarCartela() {
+  let tabela = document.getElementById("cartela");
+  tabela.innerHTML = "";
+  let numeros = [];
+
+  while (numeros.length < 25) {
+    let n = Math.floor(Math.random() * 75) + 1;
+    if (!numeros.includes(n)) numeros.push(n);
+  }
+
+  for (let i = 0; i < 5; i++) {
+    let row = tabela.insertRow();
+    for (let j = 0; j < 5; j++) {
+      let cell = row.insertCell();
+      cell.innerText = numeros[i * 5 + j];
+      cell.onclick = () => cell.classList.toggle("marcado");
+    }
+  }
+}
+
+function sortear() {
+  if (sorteados.length === 75) {
+    alert("Todos os números já foram sorteados!");
+    return;
+  }
+
+  let n;
+  do {
+    n = Math.floor(Math.random() * 75) + 1;
+  } while (sorteados.includes(n));
+
+  sorteados.push(n);
+  document.getElementById("numero").innerText = n;
+}
+</script>
+
+</body>
+</html>
