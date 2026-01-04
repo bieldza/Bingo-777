@@ -1,3 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bingo 777 🎰</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Trebuchet MS,Arial;
+  background:radial-gradient(circle at top,#ffcc00,#b30000,#3b0000);
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+.container{
+  background:linear-gradient(145deg,#8b0000,#ff0000);
+  border-radius:20px;
+  padding:20px;
+  width:95%;
+  max-width:450px;
+  text-align:center;
+  border:4px solid gold;
+  box-shadow:0 0 30px gold;
+}
+h1{
+  color:gold;
+  text-shadow:2px 2px 0 #b8860b,0 0 15px gold;
+}
+.numero{
+  font-size:70px;
+  background:radial-gradient(circle,#fff176,#fbc02d);
+  border-radius:50%;
+  width:140px;
+  height:140px;
+  margin:15px auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 0 25px gold;
+  animation:pulse 1s infinite;
+}
+@keyframes pulse{50%{transform:scale(1.08)}}
+button{
+  background:linear-gradient(145deg,gold,orange);
+  border:none;
+  border-radius:12px;
+  padding:10px;
+  margin:5px;
+  font-weight:bold;
+  cursor:pointer;
+}
+.cartela{
+  margin-top:10px;
+  background:#fff;
+  border-radius:10px;
+  padding:8px;
+}
+.cartela table{
+  width:100%;
+  border-collapse:collapse;
+}
+.cartela th{
+  background:gold;
+  color:#5c0000;
+}
+.cartela td{
+  border:1px solid #ccc;
+  padding:6px;
+  cursor:pointer;
+}
+.marcado{
+  background:#4CAF50;
+  color:#fff;
+}
+.historico{
+  margin-top:10px;
+  background:rgba(0,0,0,.3);
+  border-radius:10px;
+  padding:8px;
+  color:gold;
+  font-size:14px;
+}
+.historico-completo{
+  margin-top:10px;
+  background:#111;
+  color:#fff;
+  border-radius:10px;
+  padding:10px;
+  max-height:200px;
+  overflow:auto;
+  text-align:left;
+  font-size:13px;
+}
+.historico-completo b{
+  color:gold;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+<h1>🎉 BINGO 777 🎉</h1>
+
+<div class="numero" id="numero">--</div>
+
+<button onclick="sortear()">🎲 Sortear</button>
+<button onclick="gerarCartela()">🧾 Gerar Cartela</button>
+<button onclick="finalizarJogo()">🏁 Finalizar Jogo</button>
+<button onclick="resetar()">🔄 Resetar</button>
+
+<div class="cartela" id="cartela"></div>
+
+<div class="historico">
+<b>Números sorteados:</b>
+<div id="historicoAtual"></div>
+</div>
+
+<div class="historico-completo">
+<b>Histórico de Jogos:</b>
+<div id="historicoJogos"></div>
+<button onclick="limparHistorico()">🗑️ Limpar Histórico</button>
+</div>
+</div>
+
 <script>
 let numeros=[], sorteados=[], cartelaAtual=null;
 
@@ -38,59 +165,15 @@ function gerarCartela(){
   let h="<table><tr><th>B</th><th>I</th><th>N</th><th>G</th><th>O</th></tr>";
   for(let i=0;i<5;i++){
     h+=`<tr>
-      <td>${B[i]}</td>
-      <td>${I[i]}</td>
-      <td>${N[i]}</td>
-      <td>${G[i]}</td>
-      <td>${O[i]}</td>
+      <td onclick="this.classList.toggle('marcado')">${B[i]}</td>
+      <td onclick="this.classList.toggle('marcado')">${I[i]}</td>
+      <td onclick="this.classList.toggle('marcado')">${N[i]}</td>
+      <td onclick="this.classList.toggle('marcado')">${G[i]}</td>
+      <td onclick="this.classList.toggle('marcado')">${O[i]}</td>
     </tr>`;
   }
   h+="</table>";
   document.getElementById("cartela").innerHTML=h;
-
-  baixarCartelaImagem();
-}
-
-/* 🔽 CONVERTE CARTELA EM IMAGEM E BAIXA */
-function baixarCartelaImagem(){
-  const tabela = document.querySelector(".cartela table");
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
-
-  const cell = 60;
-  canvas.width = cell * 5;
-  canvas.height = cell * 6;
-
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-
-  ctx.fillStyle = "#fbc02d";
-  ctx.fillRect(0,0,canvas.width,cell);
-
-  ctx.fillStyle = "#5c0000";
-  ctx.font = "bold 24px Arial";
-  ["B","I","N","G","O"].forEach((l,i)=>{
-    ctx.fillText(l, cell*i+22, 38);
-  });
-
-  ctx.font = "20px Arial";
-  ctx.fillStyle = "#000";
-
-  for(let r=0;r<5;r++){
-    for(let c=0;c<5;c++){
-      ctx.strokeRect(c*cell,(r+1)*cell,cell,cell);
-      ctx.fillText(
-        tabela.rows[r+1].cells[c].innerText,
-        c*cell+20,
-        (r+1)*cell+38
-      );
-    }
-  }
-
-  const link = document.createElement("a");
-  link.download = "cartela-bingo-777.png";
-  link.href = canvas.toDataURL();
-  link.click();
 }
 
 function finalizarJogo(){
@@ -103,6 +186,7 @@ function finalizarJogo(){
   });
   localStorage.setItem("bingo777",JSON.stringify(jogos));
   carregarHistorico();
+  alert("Jogo salvo no histórico!");
 }
 
 function carregarHistorico(){
@@ -120,10 +204,19 @@ function carregarHistorico(){
   });
 }
 
+function limparHistorico(){
+  if(confirm("Apagar todo histórico?")){
+    localStorage.removeItem("bingo777");
+    carregarHistorico();
+  }
+}
+
 function resetar(){
   iniciar();
   document.getElementById("numero").innerText="--";
   document.getElementById("historicoAtual").innerText="";
   document.getElementById("cartela").innerHTML="";
 }
-    </script>
+</script>
+</body>
+</html>
