@@ -1,62 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bingo 777 🎰</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Trebuchet MS,Arial;
+  background:radial-gradient(circle at top,#ffcc00,#b30000,#3b0000);
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+.container{
+  background:linear-gradient(145deg,#8b0000,#ff0000);
+  border-radius:20px;
+  padding:20px;
+  width:95%;
+  max-width:450px;
+  text-align:center;
+  border:4px solid gold;
+  box-shadow:0 0 30px gold;
+}
+h1{
+  color:gold;
+  text-shadow:2px 2px 0 #b8860b,0 0 15px gold;
+}
+.numero{
+  font-size:70px;
+  background:radial-gradient(circle,#fff176,#fbc02d);
+  border-radius:50%;
+  width:140px;
+  height:140px;
+  margin:15px auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 0 25px gold;
+  animation:pulse 1s infinite;
+}
+@keyframes pulse{50%{transform:scale(1.08)}}
+button{
+  background:linear-gradient(145deg,gold,orange);
+  border:none;
+  border-radius:12px;
+  padding:10px;
+  margin:5px;
+  font-weight:bold;
+  cursor:pointer;
+}
+.cartela{
+  margin-top:10px;
+  background:#fff;
+  border-radius:10px;
+  padding:8px;
+}
+.cartela table{
+  width:100%;
+  border-collapse:collapse;
+}
+.cartela th{
+  background:gold;
+  color:#5c0000;
+}
+.cartela td{
+  border:1px solid #ccc;
+  padding:6px;
+  cursor:pointer;
+}
+.marcado{
+  background:#4CAF50;
+  color:#fff;
+}
+.historico{
+  margin-top:10px;
+  background:rgba(0,0,0,.3);
+  border-radius:10px;
+  padding:8px;
+  color:gold;
+  font-size:14px;
+}
+.historico-completo{
+  margin-top:10px;
+  background:#111;
+  color:#fff;
+  border-radius:10px;
+  padding:10px;
+  max-height:200px;
+  overflow:auto;
+  text-align:left;
+  font-size:13px;
+}
+.historico-completo b{
+  color:gold;
+}
+#downloadArea a{
+  display:inline-block;
+  margin-top:10px;
+  padding:10px;
+  background:gold;
+  border-radius:10px;
+  color:#000;
+  font-weight:bold;
+  text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+<h1>🎉 BINGO 777 🎉</h1>
+
+<div class="numero" id="numero">--</div>
+
+<button onclick="sortear()">🎲 Sortear</button>
+<button onclick="gerarCartela()">🧾 Gerar Cartela</button>
+<button onclick="finalizarJogo()">🏁 Finalizar Jogo</button>
+<button onclick="resetar()">🔄 Resetar</button>
+
+<div class="cartela" id="cartela"></div>
+<div id="downloadArea"></div>
+
+<div class="historico">
+<b>Números sorteados:</b>
+<div id="historicoAtual"></div>
+</div>
+
+<div class="historico-completo">
+<b>Histórico de Jogos:</b>
+<div id="historicoJogos"></div>
+<button onclick="limparHistorico()">🗑️ Limpar Histórico</button>
+</div>
+</div>
+
 <script>
-function prepararDownloadCartela(){
+let numeros=[], sorteados=[], cartelaAtual=null;
+
+function iniciar(){
+  numeros=Array.from({length:75},(_,i)=>i+1);
+  sorteados=[];
+  carregarHistorico();
+}
+iniciar();
+
+function sortear(){
+  if(!numeros.length) return alert("Todos os números foram sorteados!");
+  const i=Math.floor(Math.random()*numeros.length);
+  const n=numeros.splice(i,1)[0];
+  sorteados.push(n);
+  document.getElementById("numero").innerText=n;
+  document.getElementById("historicoAtual").innerText=sorteados.join(", ");
+}
+
+function gerarColuna(min,max){
+  let a=[];
+  while(a.length<5){
+    let n=Math.floor(Math.random()*(max-min+1))+min;
+    if(!a.includes(n)) a.push(n);
+  }
+  return a;
+}
+
+function gerarCartela(){
+  const B=gerarColuna(1,15),
+        I=gerarColuna(16,30),
+        N=gerarColuna(31,45),
+        G=gerarColuna(46,60),
+        O=gerarColuna(61,75);
+  N[2]="★";
+  cartelaAtual={B,I,N,G,O};
+
+  let h="<table><tr><th>B</th><th>I</th><th>N</th><th>G</th><th>O</th></tr>";
+  for(let i=0;i<5;i++){
+    h+=`<tr>
+      <td onclick="this.classList.toggle('marcado')">${B[i]}</td>
+      <td onclick="this.classList.toggle('marcado')">${I[i]}</td>
+      <td onclick="this.classList.toggle('marcado')">${N[i]}</td>
+      <td onclick="this.classList.toggle('marcado')">${G[i]}</td>
+      <td onclick="this.classList.toggle('marcado')">${O[i]}</td>
+    </tr>`;
+  }
+  h+="</table>";
+  document.getElementById("cartela").innerHTML=h;
+
+  // Gera botão de download da cartela HTML
+  baixarCartelaHTML();
+}
+
+function baixarCartelaHTML(){
   if(!cartelaAtual) return;
 
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
+  const htmlCartela = `
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Cartela Bingo 777</title>
+<style>
+body{font-family:Arial; display:flex; justify-content:center; align-items:center; height:100vh; background:#fff;}
+table{border-collapse:collapse; text-align:center; font-size:24px;}
+th{background:gold; padding:10px;}
+td{border:1px solid #000; padding:15px;}
+</style>
+</head>
+<body>
+<table>
+<tr><th>B</th><th>I</th><th>N</th><th>G</th><th>O</th></tr>
+${[0,1,2,3,4].map(i=>`
+<tr>
+<td>${cartelaAtual.B[i]}</td>
+<td>${cartelaAtual.I[i]}</td>
+<td>${cartelaAtual.N[i]}</td>
+<td>${cartelaAtual.G[i]}</td>
+<td>${cartelaAtual.O[i]}</td>
+</tr>`).join("")}
+</table>
+</body>
+</html>
+`;
 
-  canvas.width = 500;
-  canvas.height = 600;
-
-  ctx.fillStyle = "#fff";
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-
-  ctx.fillStyle = "#b30000";
-  ctx.font = "bold 32px Arial";
-  ctx.textAlign = "center";
-  ctx.fillText("BINGO 777", canvas.width/2, 40);
-
-  const letras = ["B","I","N","G","O"];
-  const colunas = cartelaAtual;
-
-  const x0 = 50, y0 = 80, w = 80, h = 80;
-
-  ctx.font = "bold 26px Arial";
-  letras.forEach((l,i)=>{
-    ctx.fillStyle="gold";
-    ctx.fillRect(x0+i*w,y0,w,h);
-    ctx.fillStyle="#5c0000";
-    ctx.fillText(l,x0+i*w+w/2,y0+55);
-  });
-
-  ctx.font="24px Arial";
-  for(let r=0;r<5;r++){
-    for(let c=0;c<5;c++){
-      ctx.strokeRect(x0+c*w,y0+(r+1)*h,w,h);
-      ctx.fillStyle="#000";
-      ctx.fillText(
-        colunas[letras[c]][r],
-        x0+c*w+w/2,
-        y0+(r+1)*h+55
-      );
-    }
-  }
+  const blob = new Blob([htmlCartela], { type: "text/html" });
+  const url = URL.createObjectURL(blob);
 
   const link = document.createElement("a");
-  link.href = canvas.toDataURL("image/png");
-  link.download = "cartela-bingo-777.png";
-  link.innerText = "⬇️ Baixar Cartela";
-  link.style.display = "inline-block";
-  link.style.marginTop = "10px";
-  link.style.padding = "10px";
-  link.style.background = "gold";
-  link.style.borderRadius = "10px";
-  link.style.color = "#000";
-  link.style.fontWeight = "bold";
-  link.style.textDecoration = "none";
+  link.href = url;
+  link.download = "cartela-bingo-777.html";
+  link.textContent = "⬇️ Baixar Cartela";
 
   const area = document.getElementById("downloadArea");
   area.innerHTML = "";
   area.appendChild(link);
 }
-  </script>
+
+function finalizarJogo(){
+  if(!sorteados.length) return alert("Nenhum número sorteado.");
+  const jogos=JSON.parse(localStorage.getItem("bingo777"))||[];
+  jogos.push({
+    data:new Date().toLocaleString(),
+    sorteados:[...sorteados],
+    cartela:cartelaAtual
+  });
+  localStorage.setItem("bingo777",JSON.stringify(jogos));
+  carregarHistorico();
+  alert("Jogo salvo no histórico!");
+}
+
+function carregarHistorico(){
+  const jogos=JSON.parse(localStorage.getItem("bingo777"))||[];
+  const div=document.getElementById("historicoJogos");
+  div.innerHTML="";
+  jogos.forEach((j,i)=>{
+    div.innerHTML+=`
+      <div>
+        <b>Jogo ${i+1}</b><br>
+        🕒 ${j.data}<br>
+        🎲 ${j.sorteados.join(", ")}
+        <hr>
+      </div>`;
+  });
+}
+
+function limparHistorico(){
+  if(confirm("Apagar todo histórico?")){
+    localStorage.removeItem("bingo777");
+    carregarHistorico();
+  }
+}
+
+function resetar(){
+  iniciar();
+  document.getElementById("numero").innerText="--";
+  document.getElementById("historicoAtual").innerText="";
+  document.getElementById("cartela").innerHTML="";
+  document.getElementById("downloadArea").innerHTML="";
+}
+</script>
+</body>
+  </html>
