@@ -1,165 +1,155 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bingo 777</title>
-
 <style>
-body{margin:0;font-family:Arial;background:#f2f2f7}
+body{
+  margin:0;
+  font-family:Trebuchet MS,Arial;
+  background:radial-gradient(circle at top,#ffcc00,#b30000,#3b0000);
+}
+
 .hidden{display:none}
-header{background:linear-gradient(135deg,#7b1fa2,#e91e63);color:#fff;padding:15px;text-align:center;font-size:22px;font-weight:bold}
-.card{background:#fff;margin:15px;padding:15px;border-radius:16px;box-shadow:0 6px 20px rgba(0,0,0,.08)}
-.bola{width:140px;height:140px;margin:10px auto;border-radius:50%;background:radial-gradient(circle,#b2ff59,#2e7d32);display:flex;align-items:center;justify-content:center;font-size:60px;font-weight:bold;color:#1b5e20;animation:pulse 1s infinite}
-@keyframes pulse{50%{transform:scale(1.08)}}
-button{width:100%;padding:14px;margin-top:10px;border:none;border-radius:12px;font-size:16px;font-weight:bold;color:#fff;background:linear-gradient(135deg,#43a047,#66bb6a)}
-button.sec{background:linear-gradient(135deg,#7b1fa2,#ab47bc)}
-.ultimas span{width:40px;height:40px;border-radius:50%;background:#e91e63;color:#fff;display:inline-flex;align-items:center;justify-content:center;margin:4px;font-weight:bold}
-.painel{display:grid;grid-template-columns:repeat(10,1fr);gap:6px}
-.painel div{padding:8px;border-radius:8px;background:#eee;text-align:center}
-.ok{background:#4caf50;color:#fff}
-.cartela{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
-.cartela div{background:#fafafa;padding:12px;text-align:center;border-radius:8px;border:1px solid #ddd;font-weight:bold;cursor:pointer}
-.cartela .ok{background:#4caf50;color:#fff}
-.input{width:100%;padding:14px;margin:10px 0;border-radius:12px;border:1px solid #ddd;background:#f5f5f5;font-size:16px}
-.hist{font-size:13px;background:#111;color:#fff;padding:10px;border-radius:10px;max-height:180px;overflow:auto}
-.hist b{color:#ffeb3b}
-</style>
-</head>
 
-<body>
-
-<div id="cadastro">
-  <div style="background:linear-gradient(135deg,#7b1fa2,#e91e63);padding:20px;color:#fff">
-    <h2>Bingo 777</h2>
-    <p>Rodadas rápidas e diversão garantida</p>
-  </div>
-  <div style="padding:20px">
-    <h2 style="text-align:center;color:#e91e63">Crie sua conta</h2>
-    <input class="input" placeholder="CPF">
-    <input class="input" placeholder="Nome completo">
-    <input class="input" placeholder="WhatsApp">
-    <input class="input" placeholder="Senha (4 dígitos)">
-    <button onclick="entrar()">Finalizar Cadastro</button>
-  </div>
-</div>
-
-<div id="bingo" class="hidden">
-
-<header>🎰 BINGO 777</header>
-
-<div class="card">
-  <div class="bola" id="bola">--</div>
-  <button onclick="sortear()">🎲 Sortear</button>
-  <button class="sec" onclick="novoJogo()">🔄 Novo Jogo</button>
-</div>
-
-<div class="card">
-  <h3>Últimas bolas</h3>
-  <div class="ultimas" id="ultimas"></div>
-</div>
-
-<div class="card">
-  <h3>Painel</h3>
-  <div class="painel" id="painel"></div>
-</div>
-
-<div class="card">
-  <h3>Cartela</h3>
-  <button onclick="gerarCartela()">📥 Gerar e Baixar</button>
-  <div class="cartela" id="cartela"></div>
-</div>
-
-<div class="card">
-  <h3>Histórico de Jogos</h3>
-  <div class="hist" id="historico"></div>
-</div>
-
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-<script>
-let nums=[], sorteados=[], cartelaAtual=null;
-
-function entrar(){
-  cadastro.classList.add("hidden");
-  bingo.classList.remove("hidden");
-  iniciar();
+header{
+  background:linear-gradient(145deg,#8b0000,#ff0000);
+  color:gold;
+  padding:15px;
+  text-align:center;
+  font-size:24px;
+  font-weight:bold;
+  text-shadow:2px 2px 0 #b8860b,0 0 15px gold;
+  border-bottom:4px solid gold;
 }
 
-function iniciar(){
-  nums=[...Array(75).keys()].map(n=>n+1);
-  sorteados=[];
-  montarPainel();
-  carregarHistorico();
+.card{
+  background:linear-gradient(145deg,#8b0000,#ff0000);
+  margin:15px;
+  padding:15px;
+  border-radius:20px;
+  border:3px solid gold;
+  box-shadow:0 0 25px gold;
+  color:gold;
 }
 
-function montarPainel(){
-  painel.innerHTML="";
-  for(let i=1;i<=75;i++){
-    let d=document.createElement("div");
-    d.id="p"+i;
-    d.innerText=i;
-    painel.appendChild(d);
-  }
+.bola{
+  width:140px;
+  height:140px;
+  margin:10px auto;
+  border-radius:50%;
+  background:radial-gradient(circle,#fff176,#fbc02d);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:64px;
+  font-weight:bold;
+  color:#5c0000;
+  box-shadow:0 0 25px gold,inset 0 0 10px #fff;
+  animation:pulse 1s infinite;
 }
 
-function sortear(){
-  if(!nums.length) return alert("Fim dos números");
-  let i=Math.floor(Math.random()*nums.length);
-  let n=nums.splice(i,1)[0];
-  sorteados.push(n);
-  bola.innerText=n;
-  document.getElementById("p"+n).classList.add("ok");
-  atualizarUltimas();
+@keyframes pulse{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.08)}
+  100%{transform:scale(1)}
 }
 
-function atualizarUltimas(){
-  ultimas.innerHTML="";
-  sorteados.slice(-6).reverse().forEach(n=>{
-    let s=document.createElement("span");
-    s.innerText=n;
-    ultimas.appendChild(s);
-  });
+button{
+  width:100%;
+  padding:14px;
+  margin-top:10px;
+  border:none;
+  border-radius:12px;
+  font-size:16px;
+  font-weight:bold;
+  color:#5c0000;
+  background:linear-gradient(145deg,gold,orange);
+  cursor:pointer;
+  box-shadow:0 6px #b8860b;
 }
 
-function gerarCartela(){
-  cartela.innerHTML="";
-  let col=(a,b)=>{let r=[];while(r.length<5){let n=Math.floor(Math.random()*(b-a+1))+a;if(!r.includes(n))r.push(n)}return r}
-  let B=col(1,15),I=col(16,30),N=col(31,45),G=col(46,60),O=col(61,75);
-  N[2]="★";
-  cartelaAtual={B,I,N,G,O};
-  [B,I,N,G,O].flat().forEach(n=>{
-    let d=document.createElement("div");
-    d.innerText=n;
-    d.onclick=()=>d.classList.toggle("ok");
-    cartela.appendChild(d);
-  });
-  html2canvas(cartela).then(c=>{
-    let a=document.createElement("a");
-    a.download="cartela.png";
-    a.href=c.toDataURL();
-    a.click();
-  });
+button:active{
+  box-shadow:0 2px #b8860b;
+  transform:translateY(4px);
 }
 
-function novoJogo(){
-  if(sorteados.length){
-    let h=JSON.parse(localStorage.getItem("hist"))||[];
-    h.push({data:new Date().toLocaleString(),nums:[...sorteados]});
-    localStorage.setItem("hist",JSON.stringify(h));
-  }
-  iniciar();
+button.sec{
+  background:linear-gradient(145deg,#ff5252,#b30000);
+  color:#fff;
 }
 
-function carregarHistorico(){
-  let h=JSON.parse(localStorage.getItem("hist"))||[];
-  historico.innerHTML="";
-  h.forEach((j,i)=>{
-    historico.innerHTML+=`<b>Jogo ${i+1}</b><br>${j.data}<br>${j.nums.join(", ")}<hr>`;
-  });
+.ultimas span{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:gold;
+  color:#5c0000;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin:4px;
+  font-weight:bold;
 }
-</script>
 
-</body>
-  </html>
+.painel{
+  display:grid;
+  grid-template-columns:repeat(10,1fr);
+  gap:6px;
+}
+
+.painel div{
+  padding:8px;
+  border-radius:8px;
+  background:rgba(255,255,255,.8);
+  text-align:center;
+  color:#5c0000;
+  font-weight:bold;
+}
+
+.ok{
+  background:#4caf50 !important;
+  color:#fff !important;
+}
+
+.cartela{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:6px;
+}
+
+.cartela div{
+  background:#fff;
+  padding:12px;
+  text-align:center;
+  border-radius:8px;
+  border:2px solid gold;
+  font-weight:bold;
+  color:#5c0000;
+  cursor:pointer;
+}
+
+.cartela .ok{
+  background:#4caf50;
+  color:#fff;
+}
+
+.input{
+  width:100%;
+  padding:14px;
+  margin:10px 0;
+  border-radius:12px;
+  border:2px solid gold;
+  background:#fff8e1;
+  font-size:16px;
+}
+
+.hist{
+  font-size:13px;
+  background:rgba(0,0,0,.6);
+  color:#fff;
+  padding:10px;
+  border-radius:10px;
+  max-height:180px;
+  overflow:auto;
+}
+
+.hist b{
+  color:gold;
+}
+                     </style>
