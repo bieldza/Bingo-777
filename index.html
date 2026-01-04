@@ -11,6 +11,8 @@ body{
   font-family: Arial, sans-serif;
   background:#f2f2f7;
 }
+.hidden{display:none}
+
 header{
   background:linear-gradient(135deg,#7b1fa2,#e91e63);
   color:#fff;
@@ -19,6 +21,7 @@ header{
   font-size:22px;
   font-weight:bold;
 }
+
 .card{
   background:#fff;
   margin:15px;
@@ -26,7 +29,8 @@ header{
   border-radius:16px;
   box-shadow:0 6px 20px rgba(0,0,0,.08);
 }
-.bola-atual{
+
+.bola{
   width:140px;
   height:140px;
   margin:10px auto;
@@ -38,14 +42,15 @@ header{
   font-size:60px;
   font-weight:bold;
   color:#1b5e20;
-  box-shadow:0 0 20px rgba(0,0,0,.2);
   animation:pulse 1s infinite;
 }
+
 @keyframes pulse{
   0%{transform:scale(1)}
   50%{transform:scale(1.08)}
   100%{transform:scale(1)}
 }
+
 button{
   width:100%;
   padding:14px;
@@ -57,67 +62,94 @@ button{
   color:#fff;
   background:linear-gradient(135deg,#43a047,#66bb6a);
 }
-button.secondary{
+
+button.sec{
   background:linear-gradient(135deg,#7b1fa2,#ab47bc);
 }
-.ultimas{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  justify-content:center;
-}
+
 .ultimas span{
   width:40px;
   height:40px;
   border-radius:50%;
   background:#e91e63;
   color:#fff;
-  display:flex;
+  display:inline-flex;
   align-items:center;
   justify-content:center;
+  margin:4px;
   font-weight:bold;
 }
+
 .painel{
   display:grid;
   grid-template-columns:repeat(10,1fr);
   gap:6px;
 }
+
 .painel div{
   padding:8px;
   border-radius:8px;
-  text-align:center;
-  font-size:13px;
   background:#eee;
+  text-align:center;
 }
-.painel .ok{
-  background:#4caf50;
-  color:#fff;
-}
+
+.ok{background:#4caf50;color:#fff}
+
 .cartela{
   display:grid;
   grid-template-columns:repeat(5,1fr);
   gap:6px;
-  margin-top:10px;
 }
+
 .cartela div{
   background:#fafafa;
   padding:12px;
   text-align:center;
   border-radius:8px;
-  font-weight:bold;
   border:1px solid #ddd;
+  font-weight:bold;
+}
+
+.input{
+  width:100%;
+  padding:14px;
+  margin:10px 0;
+  border-radius:12px;
+  border:1px solid #ddd;
+  background:#f5f5f5;
+  font-size:16px;
 }
 </style>
 </head>
 
 <body>
 
+<!-- TELA DE CADASTRO -->
+<div id="cadastro">
+  <div style="background:linear-gradient(135deg,#7b1fa2,#e91e63);padding:20px;color:#fff;">
+    <h2>Bingo 777</h2>
+    <p>Rodadas rápidas e diversão garantida</p>
+  </div>
+
+  <div style="padding:20px">
+    <h2 style="text-align:center;color:#e91e63">Crie sua conta</h2>
+    <input class="input" placeholder="CPF">
+    <input class="input" placeholder="Nome completo">
+    <input class="input" placeholder="WhatsApp">
+    <input class="input" type="password" placeholder="Senha (4 dígitos)">
+    <button onclick="entrar()">Finalizar Cadastro</button>
+  </div>
+</div>
+
+<!-- BINGO -->
+<div id="bingo" class="hidden">
+
 <header>🎰 BINGO 777</header>
 
 <div class="card">
-  <div class="bola-atual" id="bola">--</div>
-  <button onclick="sortear()">🎲 Sortear Número</button>
-  <button class="secondary" onclick="resetar()">🔄 Novo Jogo</button>
+  <div class="bola" id="bola">--</div>
+  <button onclick="sortear()">🎲 Sortear</button>
+  <button class="sec" onclick="resetar()">🔄 Novo Jogo</button>
 </div>
 
 <div class="card">
@@ -126,72 +158,88 @@ button.secondary{
 </div>
 
 <div class="card">
-  <h3>Painel de bolas</h3>
+  <h3>Painel</h3>
   <div class="painel" id="painel"></div>
 </div>
 
 <div class="card">
-  <h3>Gerar Cartela</h3>
-  <button onclick="gerarCartela()">📥 Gerar e Baixar Cartela</button>
-  <div id="cartela" class="cartela"></div>
+  <h3>Cartela</h3>
+  <button onclick="gerarCartela()">📥 Gerar e Baixar</button>
+  <div class="cartela" id="cartela"></div>
 </div>
 
-<script>
-let numeros=[...Array(75).keys()].map(n=>n+1);
-let sorteados=[];
+</div>
 
-const painel=document.getElementById("painel");
-for(let i=1;i<=75;i++){
-  const d=document.createElement("div");
-  d.id="p"+i;
-  d.innerText=i;
-  painel.appendChild(d);
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+<script>
+let numeros=JSON.parse(localStorage.getItem("nums"))||[...Array(75).keys()].map(n=>n+1);
+let sorteados=JSON.parse(localStorage.getItem("sorteados"))||[];
+
+function entrar(){
+  cadastro.classList.add("hidden");
+  bingo.classList.remove("hidden");
+  montarPainel();
+  atualizar();
+}
+
+function montarPainel(){
+  painel.innerHTML="";
+  for(let i=1;i<=75;i++){
+    let d=document.createElement("div");
+    d.id="p"+i;
+    d.innerText=i;
+    if(sorteados.includes(i)) d.classList.add("ok");
+    painel.appendChild(d);
+  }
 }
 
 function sortear(){
-  if(numeros.length===0){alert("Fim do jogo");return;}
-  const i=Math.floor(Math.random()*numeros.length);
-  const n=numeros.splice(i,1)[0];
+  if(numeros.length===0){alert("Fim");return;}
+  let i=Math.floor(Math.random()*numeros.length);
+  let n=numeros.splice(i,1)[0];
   sorteados.push(n);
-  document.getElementById("bola").innerText=n;
-  document.getElementById("p"+n).classList.add("ok");
-  atualizarUltimas();
+  salvar();
+  atualizar();
 }
 
-function atualizarUltimas(){
-  const u=document.getElementById("ultimas");
-  u.innerHTML="";
+function atualizar(){
+  bola.innerText=sorteados[sorteados.length-1]||"--";
+  ultimas.innerHTML="";
   sorteados.slice(-6).reverse().forEach(n=>{
-    const s=document.createElement("span");
+    let s=document.createElement("span");
     s.innerText=n;
-    u.appendChild(s);
+    ultimas.appendChild(s);
+    document.getElementById("p"+n)?.classList.add("ok");
   });
 }
 
+function salvar(){
+  localStorage.setItem("nums",JSON.stringify(numeros));
+  localStorage.setItem("sorteados",JSON.stringify(sorteados));
+}
+
 function resetar(){
+  localStorage.clear();
   location.reload();
 }
 
 function gerarCartela(){
-  const nums=[...Array(75).keys()].map(n=>n+1).sort(()=>0.5-Math.random()).slice(0,25);
-  const c=document.getElementById("cartela");
-  c.innerHTML="";
+  cartela.innerHTML="";
+  let nums=[...Array(75).keys()].map(n=>n+1).sort(()=>0.5-Math.random()).slice(0,25);
   nums.forEach(n=>{
-    const d=document.createElement("div");
+    let d=document.createElement("div");
     d.innerText=n;
-    c.appendChild(d);
+    cartela.appendChild(d);
   });
-
-  html2canvas(c).then(canvas=>{
-    const link=document.createElement("a");
-    link.download="cartela-bingo.png";
-    link.href=canvas.toDataURL();
-    link.click();
+  html2canvas(cartela).then(c=>{
+    let a=document.createElement("a");
+    a.download="cartela.png";
+    a.href=c.toDataURL();
+    a.click();
   });
 }
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-
 </body>
-</html>
+  </html>
