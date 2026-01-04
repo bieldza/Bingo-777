@@ -1,155 +1,99 @@
-<style>
-body{
-  margin:0;
-  font-family:Trebuchet MS,Arial;
-  background:radial-gradient(circle at top,#ffcc00,#b30000,#3b0000);
+<script>
+let numeros=[], sorteados=[], cartelaAtual=null;
+
+function iniciar(){
+  numeros=Array.from({length:75},(_,i)=>i+1);
+  sorteados=[];
+}
+iniciar();
+
+function sortear(){
+  if(!numeros.length) return alert("Todos já foram sorteados!");
+  const i=Math.floor(Math.random()*numeros.length);
+  const n=numeros.splice(i,1)[0];
+  sorteados.push(n);
+  document.getElementById("numero").innerText=n;
 }
 
-.hidden{display:none}
-
-header{
-  background:linear-gradient(145deg,#8b0000,#ff0000);
-  color:gold;
-  padding:15px;
-  text-align:center;
-  font-size:24px;
-  font-weight:bold;
-  text-shadow:2px 2px 0 #b8860b,0 0 15px gold;
-  border-bottom:4px solid gold;
+function gerarColuna(min,max){
+  let a=[];
+  while(a.length<5){
+    let n=Math.floor(Math.random()*(max-min+1))+min;
+    if(!a.includes(n)) a.push(n);
+  }
+  return a;
 }
 
-.card{
-  background:linear-gradient(145deg,#8b0000,#ff0000);
-  margin:15px;
-  padding:15px;
-  border-radius:20px;
-  border:3px solid gold;
-  box-shadow:0 0 25px gold;
-  color:gold;
+function gerarCartela(){
+  const B=gerarColuna(1,15),
+        I=gerarColuna(16,30),
+        N=gerarColuna(31,45),
+        G=gerarColuna(46,60),
+        O=gerarColuna(61,75);
+  N[2]="★";
+  cartelaAtual={B,I,N,G,O};
+
+  let h="<table><tr><th>B</th><th>I</th><th>N</th><th>G</th><th>O</th></tr>";
+  for(let i=0;i<5;i++){
+    h+=`<tr>
+      <td>${B[i]}</td>
+      <td>${I[i]}</td>
+      <td>${N[i]}</td>
+      <td>${G[i]}</td>
+      <td>${O[i]}</td>
+    </tr>`;
+  }
+  h+="</table>";
+  document.getElementById("cartela").innerHTML=h;
+
+  gerarImagem();
 }
 
-.bola{
-  width:140px;
-  height:140px;
-  margin:10px auto;
-  border-radius:50%;
-  background:radial-gradient(circle,#fff176,#fbc02d);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:64px;
-  font-weight:bold;
-  color:#5c0000;
-  box-shadow:0 0 25px gold,inset 0 0 10px #fff;
-  animation:pulse 1s infinite;
+function gerarImagem(){
+  const tabela=document.querySelector(".cartela table");
+  if(!tabela) return;
+
+  const cell=80;
+  const canvas=document.createElement("canvas");
+  const ctx=canvas.getContext("2d");
+
+  canvas.width=cell*5;
+  canvas.height=cell*6;
+
+  ctx.fillStyle="#fff";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  ctx.fillStyle="#fbc02d";
+  ctx.fillRect(0,0,canvas.width,cell);
+
+  ctx.fillStyle="#5c0000";
+  ctx.font="bold 32px Arial";
+  ["B","I","N","G","O"].forEach((l,i)=>{
+    ctx.fillText(l,cell*i+28,52);
+  });
+
+  ctx.font="26px Arial";
+  ctx.fillStyle="#000";
+
+  for(let r=0;r<5;r++){
+    for(let c=0;c<5;c++){
+      ctx.strokeRect(c*cell,(r+1)*cell,cell,cell);
+      ctx.fillText(
+        tabela.rows[r+1].cells[c].innerText,
+        c*cell+25,
+        (r+1)*cell+55
+      );
+    }
+  }
+
+  document.getElementById("imgCartela").src=canvas.toDataURL("image/png");
+  document.getElementById("previewImagem").style.display="block";
 }
 
-@keyframes pulse{
-  0%{transform:scale(1)}
-  50%{transform:scale(1.08)}
-  100%{transform:scale(1)}
+function resetar(){
+  iniciar();
+  document.getElementById("numero").innerText="--";
+  document.getElementById("cartela").innerHTML="";
+  document.getElementById("previewImagem").style.display="none";
 }
-
-button{
-  width:100%;
-  padding:14px;
-  margin-top:10px;
-  border:none;
-  border-radius:12px;
-  font-size:16px;
-  font-weight:bold;
-  color:#5c0000;
-  background:linear-gradient(145deg,gold,orange);
-  cursor:pointer;
-  box-shadow:0 6px #b8860b;
-}
-
-button:active{
-  box-shadow:0 2px #b8860b;
-  transform:translateY(4px);
-}
-
-button.sec{
-  background:linear-gradient(145deg,#ff5252,#b30000);
-  color:#fff;
-}
-
-.ultimas span{
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  background:gold;
-  color:#5c0000;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  margin:4px;
-  font-weight:bold;
-}
-
-.painel{
-  display:grid;
-  grid-template-columns:repeat(10,1fr);
-  gap:6px;
-}
-
-.painel div{
-  padding:8px;
-  border-radius:8px;
-  background:rgba(255,255,255,.8);
-  text-align:center;
-  color:#5c0000;
-  font-weight:bold;
-}
-
-.ok{
-  background:#4caf50 !important;
-  color:#fff !important;
-}
-
-.cartela{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:6px;
-}
-
-.cartela div{
-  background:#fff;
-  padding:12px;
-  text-align:center;
-  border-radius:8px;
-  border:2px solid gold;
-  font-weight:bold;
-  color:#5c0000;
-  cursor:pointer;
-}
-
-.cartela .ok{
-  background:#4caf50;
-  color:#fff;
-}
-
-.input{
-  width:100%;
-  padding:14px;
-  margin:10px 0;
-  border-radius:12px;
-  border:2px solid gold;
-  background:#fff8e1;
-  font-size:16px;
-}
-
-.hist{
-  font-size:13px;
-  background:rgba(0,0,0,.6);
-  color:#fff;
-  padding:10px;
-  border-radius:10px;
-  max-height:180px;
-  overflow:auto;
-}
-
-.hist b{
-  color:gold;
-}
-  </style>
+    </script>
