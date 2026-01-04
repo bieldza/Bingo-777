@@ -3,220 +3,195 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bingo 777 🎰</title>
+<title>Bingo 777</title>
 
 <style>
 body{
   margin:0;
-  font-family:Trebuchet MS,Arial;
-  background:radial-gradient(circle at top,#ffcc00,#b30000,#3b0000);
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  font-family: Arial, sans-serif;
+  background:#f2f2f7;
 }
-.container{
-  background:linear-gradient(145deg,#8b0000,#ff0000);
-  border-radius:20px;
-  padding:20px;
-  width:95%;
-  max-width:450px;
+header{
+  background:linear-gradient(135deg,#7b1fa2,#e91e63);
+  color:#fff;
+  padding:15px;
   text-align:center;
-  border:4px solid gold;
-  box-shadow:0 0 30px gold;
+  font-size:22px;
+  font-weight:bold;
 }
-h1{
-  color:gold;
-  text-shadow:2px 2px 0 #b8860b,0 0 15px gold;
+.card{
+  background:#fff;
+  margin:15px;
+  padding:15px;
+  border-radius:16px;
+  box-shadow:0 6px 20px rgba(0,0,0,.08);
 }
-.numero{
-  font-size:70px;
-  background:radial-gradient(circle,#fff176,#fbc02d);
-  border-radius:50%;
+.bola-atual{
   width:140px;
   height:140px;
-  margin:15px auto;
+  margin:10px auto;
+  border-radius:50%;
+  background:radial-gradient(circle,#b2ff59,#2e7d32);
   display:flex;
   align-items:center;
   justify-content:center;
-  box-shadow:0 0 25px gold;
+  font-size:60px;
+  font-weight:bold;
+  color:#1b5e20;
+  box-shadow:0 0 20px rgba(0,0,0,.2);
   animation:pulse 1s infinite;
 }
-@keyframes pulse{50%{transform:scale(1.08)}}
+@keyframes pulse{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.08)}
+  100%{transform:scale(1)}
+}
 button{
-  background:linear-gradient(145deg,gold,orange);
+  width:100%;
+  padding:14px;
+  margin-top:10px;
   border:none;
   border-radius:12px;
-  padding:10px;
-  margin:5px;
+  font-size:16px;
   font-weight:bold;
-  cursor:pointer;
+  color:#fff;
+  background:linear-gradient(135deg,#43a047,#66bb6a);
+}
+button.secondary{
+  background:linear-gradient(135deg,#7b1fa2,#ab47bc);
+}
+.ultimas{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+.ultimas span{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:#e91e63;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+}
+.painel{
+  display:grid;
+  grid-template-columns:repeat(10,1fr);
+  gap:6px;
+}
+.painel div{
+  padding:8px;
+  border-radius:8px;
+  text-align:center;
+  font-size:13px;
+  background:#eee;
+}
+.painel .ok{
+  background:#4caf50;
+  color:#fff;
 }
 .cartela{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:6px;
   margin-top:10px;
-  background:#fff;
-  border-radius:10px;
-  padding:8px;
 }
-.cartela table{
-  width:100%;
-  border-collapse:collapse;
-}
-.cartela th{
-  background:gold;
-  color:#5c0000;
-}
-.cartela td{
-  border:1px solid #ccc;
-  padding:6px;
-  cursor:pointer;
-}
-.marcado{
-  background:#4CAF50;
-  color:#fff;
-}
-.historico{
-  margin-top:10px;
-  background:rgba(0,0,0,.3);
-  border-radius:10px;
-  padding:8px;
-  color:gold;
-  font-size:14px;
-}
-.historico-completo{
-  margin-top:10px;
-  background:#111;
-  color:#fff;
-  border-radius:10px;
-  padding:10px;
-  max-height:200px;
-  overflow:auto;
-  text-align:left;
-  font-size:13px;
-}
-.historico-completo b{
-  color:gold;
+.cartela div{
+  background:#fafafa;
+  padding:12px;
+  text-align:center;
+  border-radius:8px;
+  font-weight:bold;
+  border:1px solid #ddd;
 }
 </style>
 </head>
 
 <body>
-<div class="container">
-<h1>🎉 BINGO 777 🎉</h1>
 
-<div class="numero" id="numero">--</div>
+<header>🎰 BINGO 777</header>
 
-<button onclick="sortear()">🎲 Sortear</button>
-<button onclick="gerarCartela()">🧾 Gerar Cartela</button>
-<button onclick="finalizarJogo()">🏁 Finalizar Jogo</button>
-<button onclick="resetar()">🔄 Resetar</button>
-
-<div class="cartela" id="cartela"></div>
-
-<div class="historico">
-<b>Números sorteados:</b>
-<div id="historicoAtual"></div>
+<div class="card">
+  <div class="bola-atual" id="bola">--</div>
+  <button onclick="sortear()">🎲 Sortear Número</button>
+  <button class="secondary" onclick="resetar()">🔄 Novo Jogo</button>
 </div>
 
-<div class="historico-completo">
-<b>Histórico de Jogos:</b>
-<div id="historicoJogos"></div>
-<button onclick="limparHistorico()">🗑️ Limpar Histórico</button>
+<div class="card">
+  <h3>Últimas bolas</h3>
+  <div class="ultimas" id="ultimas"></div>
 </div>
+
+<div class="card">
+  <h3>Painel de bolas</h3>
+  <div class="painel" id="painel"></div>
+</div>
+
+<div class="card">
+  <h3>Gerar Cartela</h3>
+  <button onclick="gerarCartela()">📥 Gerar e Baixar Cartela</button>
+  <div id="cartela" class="cartela"></div>
 </div>
 
 <script>
-let numeros=[], sorteados=[], cartelaAtual=null;
+let numeros=[...Array(75).keys()].map(n=>n+1);
+let sorteados=[];
 
-function iniciar(){
-  numeros=Array.from({length:75},(_,i)=>i+1);
-  sorteados=[];
-  carregarHistorico();
+const painel=document.getElementById("painel");
+for(let i=1;i<=75;i++){
+  const d=document.createElement("div");
+  d.id="p"+i;
+  d.innerText=i;
+  painel.appendChild(d);
 }
-iniciar();
 
 function sortear(){
-  if(!numeros.length) return alert("Todos os números foram sorteados!");
+  if(numeros.length===0){alert("Fim do jogo");return;}
   const i=Math.floor(Math.random()*numeros.length);
   const n=numeros.splice(i,1)[0];
   sorteados.push(n);
-  document.getElementById("numero").innerText=n;
-  document.getElementById("historicoAtual").innerText=sorteados.join(", ");
+  document.getElementById("bola").innerText=n;
+  document.getElementById("p"+n).classList.add("ok");
+  atualizarUltimas();
 }
 
-function gerarColuna(min,max){
-  let a=[];
-  while(a.length<5){
-    let n=Math.floor(Math.random()*(max-min+1))+min;
-    if(!a.includes(n)) a.push(n);
-  }
-  return a;
-}
-
-function gerarCartela(){
-  const B=gerarColuna(1,15),
-        I=gerarColuna(16,30),
-        N=gerarColuna(31,45),
-        G=gerarColuna(46,60),
-        O=gerarColuna(61,75);
-  N[2]="★";
-  cartelaAtual={B,I,N,G,O};
-
-  let h="<table><tr><th>B</th><th>I</th><th>N</th><th>G</th><th>O</th></tr>";
-  for(let i=0;i<5;i++){
-    h+=`<tr>
-      <td onclick="this.classList.toggle('marcado')">${B[i]}</td>
-      <td onclick="this.classList.toggle('marcado')">${I[i]}</td>
-      <td onclick="this.classList.toggle('marcado')">${N[i]}</td>
-      <td onclick="this.classList.toggle('marcado')">${G[i]}</td>
-      <td onclick="this.classList.toggle('marcado')">${O[i]}</td>
-    </tr>`;
-  }
-  h+="</table>";
-  document.getElementById("cartela").innerHTML=h;
-}
-
-function finalizarJogo(){
-  if(!sorteados.length) return alert("Nenhum número sorteado.");
-  const jogos=JSON.parse(localStorage.getItem("bingo777"))||[];
-  jogos.push({
-    data:new Date().toLocaleString(),
-    sorteados:[...sorteados],
-    cartela:cartelaAtual
+function atualizarUltimas(){
+  const u=document.getElementById("ultimas");
+  u.innerHTML="";
+  sorteados.slice(-6).reverse().forEach(n=>{
+    const s=document.createElement("span");
+    s.innerText=n;
+    u.appendChild(s);
   });
-  localStorage.setItem("bingo777",JSON.stringify(jogos));
-  carregarHistorico();
-  alert("Jogo salvo no histórico!");
-}
-
-function carregarHistorico(){
-  const jogos=JSON.parse(localStorage.getItem("bingo777"))||[];
-  const div=document.getElementById("historicoJogos");
-  div.innerHTML="";
-  jogos.forEach((j,i)=>{
-    div.innerHTML+=`
-      <div>
-        <b>Jogo ${i+1}</b><br>
-        🕒 ${j.data}<br>
-        🎲 ${j.sorteados.join(", ")}
-        <hr>
-      </div>`;
-  });
-}
-
-function limparHistorico(){
-  if(confirm("Apagar todo histórico?")){
-    localStorage.removeItem("bingo777");
-    carregarHistorico();
-  }
 }
 
 function resetar(){
-  iniciar();
-  document.getElementById("numero").innerText="--";
-  document.getElementById("historicoAtual").innerText="";
-  document.getElementById("cartela").innerHTML="";
+  location.reload();
+}
+
+function gerarCartela(){
+  const nums=[...Array(75).keys()].map(n=>n+1).sort(()=>0.5-Math.random()).slice(0,25);
+  const c=document.getElementById("cartela");
+  c.innerHTML="";
+  nums.forEach(n=>{
+    const d=document.createElement("div");
+    d.innerText=n;
+    c.appendChild(d);
+  });
+
+  html2canvas(c).then(canvas=>{
+    const link=document.createElement("a");
+    link.download="cartela-bingo.png";
+    link.href=canvas.toDataURL();
+    link.click();
+  });
 }
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
 </body>
 </html>
